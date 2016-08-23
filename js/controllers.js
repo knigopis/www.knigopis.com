@@ -208,7 +208,7 @@ appControllers.controller('MainController', [
     function loadLatestBooks(){
         $scope.showLoading();
 
-        apiBook.getLatestBooks().then(function (response) {
+        apiBook.getLatestBooksWithNotes().then(function (response) {
             $scope.latestBooks = response;
         }, $scope.showApiError).then(function () {
             $scope.hideLoading();

@@ -23,6 +23,16 @@ app.service('apiBook', function ($http) {
     api.getLatestBooks = function () {
         return call('GET', '/books/latest');
     };
+    
+    api.getLatestBooksWithNotes = function () {
+        return call('GET', '/books/latest-notes').then(function(response){
+            var arr = [];
+            angular.forEach(response, function(value) {
+                arr.push(value);
+            });
+            return arr;
+        });
+    };
 
     api.getBook = function (id) {
         return call('GET', '/books/' + id);
