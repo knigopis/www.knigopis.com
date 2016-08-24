@@ -132,6 +132,10 @@ app.service('apiBook', function ($http) {
     api.editUser = function (id, data) {
         return call('PUT', '/users/' + id, data);
     };
+    
+    api.findIdByParseId = function (id) {
+        return call('GET', '/users/find-id-by-parse-id/' + id);
+    };
 
 });
 

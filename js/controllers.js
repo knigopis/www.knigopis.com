@@ -336,26 +336,46 @@ appControllers.controller('BookEditController', [
 ]);
 
 
-appControllers.controller('UserBooksController', ['$rootScope', '$scope', '$stateParams', '$interval', '$state', 'apiBook',
-    function($rootScope, $scope, $stateParams, $interval, $state, apiBook) {
+appControllers.controller('UserBooksController', ['$rootScope', '$scope', '$stateParams', '$interval', '$state', 'apiBook', '$q', 
+    function($rootScope, $scope, $stateParams, $interval, $state, apiBook, $q) {
 
         $scope.loaded = false;
         if ($stateParams.u) {
             $scope.showLoading();
-
-            apiBook.getUserBooks($stateParams.u).then(function (books) {
-                sortBooksByDate(books);
-                $scope.booksDividedByYear = divideByYears(books);
-                $scope.populateSideNavigation();
-                $scope.loaded = true;
-                if ($stateParams.y) {
-                    $scope.scrollToYear($stateParams.y);
+            
+            var userTestPromise = $q(function (resolve, reject) {
+                // reject to change state if new id has been found 
+                if (!/-/.test($stateParams.u)) {
+                    apiBook.findIdByParseId($stateParams.u).then(function (newId) {
+                        if (newId !== false) {
+                            $state.go("user_books", {nickname: $stateParams.nickname, u: newId});
+                            reject();
+                        } else {
+                            resolve();
+                        }
+                    }, resolve);
+                } else {
+                    resolve();
                 }
-            }, $scope.showApiError).then(function () {
+            });
+            
+            userTestPromise.then(function () {
+                $scope.loadUserData($stateParams.u);
+
+                return apiBook.getUserBooks($stateParams.u).then(function (books) {
+                    sortBooksByDate(books);
+                    $scope.booksDividedByYear = divideByYears(books);
+                    $scope.populateSideNavigation();
+                    $scope.loaded = true;
+                    if ($stateParams.y) {
+                        $scope.scrollToYear($stateParams.y);
+                    }
+                }, $scope.showApiError);
+
+            }).then(function () {
                 $scope.hideLoading();
             });
-
-            $scope.loadUserData($stateParams.u);
+            
         }
         
         function sortBooksByDate (books) {
