@@ -659,8 +659,8 @@ appControllers.controller('WishEditController', [
 
 /* End of Wish */
 
-appControllers.controller('SettingsController', ['$scope', '$state', 'apiBook',
-    function ($scope, $state, apiBook) {
+appControllers.controller('SettingsController', ['$scope', '$state', 'apiBook', 'localStorageService',
+    function ($scope, $state, apiBook, localStorageService) {
         $scope.settings = {
             nickname: $scope.user.nickname,
             profile: $scope.user.profile,
@@ -679,6 +679,7 @@ appControllers.controller('SettingsController', ['$scope', '$state', 'apiBook',
             $scope.user.lang = $scope.settings.lang;
 
             apiBook.editUser($scope.user.id, $scope.user).then(function () {
+                localStorageService.set('user', $scope.user);
                 ga('send', 'event', 'User', 'SaveSettings', $scope.user.id);
                 $state.go("index");
             }, $scope.showApiError).then(function () {
