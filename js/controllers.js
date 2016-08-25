@@ -336,33 +336,16 @@ appControllers.controller('BookEditController', [
 ]);
 
 
-appControllers.controller('UserBooksController', ['$rootScope', '$scope', '$stateParams', '$interval', '$state', 'apiBook', '$q', 
-    function($rootScope, $scope, $stateParams, $interval, $state, apiBook, $q) {
+appControllers.controller('UserBooksController', ['$rootScope', '$scope', '$stateParams', '$interval', '$state', 'apiBook',
+    function($rootScope, $scope, $stateParams, $interval, $state, apiBook) {
 
         $scope.loaded = false;
         if ($stateParams.u) {
-            $scope.showLoading();
-            
-            var userTestPromise = $q(function (resolve, reject) {
-                // reject to change state if new id has been found 
-                if (!/-/.test($stateParams.u)) {
-                    apiBook.findIdByParseId($stateParams.u).then(function (newId) {
-                        if (newId !== false) {
-                            $state.go("user_books", {nickname: $stateParams.nickname, u: newId});
-                            reject();
-                        } else {
-                            resolve();
-                        }
-                    }, resolve);
-                } else {
-                    resolve();
-                }
-            });
-            
-            userTestPromise.then(function () {
-                $scope.loadUserData($stateParams.u);
 
-                return apiBook.getUserBooks($stateParams.u).then(function (books) {
+            var startLoadingData = function () {
+                $scope.showLoading();
+
+                apiBook.getUserBooks($stateParams.u).then(function (books) {
                     sortBooksByDate(books);
                     $scope.booksDividedByYear = divideByYears(books);
                     $scope.populateSideNavigation();
@@ -370,14 +353,31 @@ appControllers.controller('UserBooksController', ['$rootScope', '$scope', '$stat
                     if ($stateParams.y) {
                         $scope.scrollToYear($stateParams.y);
                     }
-                }, $scope.showApiError);
+                }, $scope.showApiError).then(function(){
+                    $scope.hideLoading();
+                });
 
-            }).then(function () {
-                $scope.hideLoading();
-            });
-            
+                $scope.loadUserData($stateParams.u);
+            };
+
+
+            if (!/-/.test($stateParams.u)) {
+                $scope.showLoading();
+                apiBook.findIdByParseId($stateParams.u).then(function (newId) {
+                    if (newId !== false) {
+                        $state.go("user_books", {nickname: $stateParams.nickname, u: newId});
+                    } else {
+                        startLoadingData();
+                    }
+                }, $scope.showApiError).then(function(){
+                    $scope.hideLoading();
+                });
+            } else {
+                startLoadingData();
+            }
+
         }
-        
+
         function sortBooksByDate (books) {
             function compare(a, b) {
                 if (a.readYear > b.readYear) {
