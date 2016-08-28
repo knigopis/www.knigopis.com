@@ -118,6 +118,10 @@ app.service('apiBook', function ($http) {
     api.getUserInfo = function (id) {
         return call('GET', '/users/' + id);
     };
+    
+    api.getCurrentUserInfo = function () {
+        return call('GET', '/users/current');
+    };
 
     api.getLastUsers = function () {
         return call('GET', '/users/latest').then(function (response) {

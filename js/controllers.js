@@ -33,6 +33,14 @@ appControllers.controller('MainController', [
             $scope.loginLoading = 0;
         });
     };
+    
+    $scope.reloadUserData = function () {
+        apiBook.getCurrentUserInfo().then(function(user){
+            $scope.user = user;
+            localStorageService.set('user', user);
+        });
+    };
+    $scope.reloadUserData();
 
     window.authCallback = $scope.authCallback;
     $scope.updateLanguage = function (lang) {
@@ -234,6 +242,7 @@ appControllers.controller('BookFormController', [
             apiBook.saveBook($scope.book).then(function (response) {
                 afterSave();
                 $scope.bookSaved = 1;
+                $scope.reloadUserData();
                 $scope.form.$setPristine();
                 ga('send', 'event', 'Book', 'Save', response.title);
                 $scope.goToCurrentUserBooks();
@@ -241,7 +250,7 @@ appControllers.controller('BookFormController', [
                 $scope.hideLoading();
             });
         };
-
+        
         $scope.saveBookAndContinue = function() {
             if (!$scope.form.$valid) {
                 return;
@@ -256,6 +265,7 @@ appControllers.controller('BookFormController', [
             bookMethod($scope.book).then(function (response) {
                 afterSave();
                 $scope.bookSaved = 1;
+                $scope.reloadUserData();
                 var savedReadYear = $scope.book.readYear;
                 $scope.book = {};
                 $scope.book.readYear = savedReadYear;
@@ -269,6 +279,7 @@ appControllers.controller('BookFormController', [
         $scope.deleteBook = function() {
             $scope.showLoading();
             apiBook.deleteBook($scope.book.id).then(function () {
+                $scope.reloadUserData();
                 ga('send', 'event', 'Book', 'Delete', $scope.book.title);
                 $scope.goToCurrentUserBooks();
             }, $scope.showApiError).then(function () {
@@ -679,7 +690,7 @@ appControllers.controller('SettingsController', ['$scope', '$state', 'apiBook', 
             $scope.user.lang = $scope.settings.lang;
 
             apiBook.editUser($scope.user.id, $scope.user).then(function () {
-                localStorageService.set('user', $scope.user);
+                $scope.reloadUserData();
                 ga('send', 'event', 'User', 'SaveSettings', $scope.user.id);
                 $state.go("index");
             }, $scope.showApiError).then(function () {
