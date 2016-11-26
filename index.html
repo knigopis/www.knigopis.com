@@ -70,6 +70,7 @@
                                     <li class="visible-sm" ng-show="user" ng-class="{active: state.current.name === 'wish.list'}"><a ui-sref="wish.list">Список к прочтению</a></li>
                                     <li class="visible-sm visible-md" ng-show="user" ng-class="{active: state.current.name === 'wish.add'}"><a ui-sref="wish.add">Добавить к прочтению</a></li>
                                     <li class="divider visible-md"></li>
+                                    <li ng-show="user && !user.booksCount"><a ui-sref="import" href="#">Импорт</a></li>
                                     <li><a ui-sref="settings" href="#">Настройки</a></li>
                                     <li class="divider"></li>
                                     <li><a href="#" class="logout-btn" ng-click="logout()">Выйти</a></li>
@@ -425,6 +426,25 @@
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary" ng-click="saveUserSettings()">Сохранить и закрыть</button>
+                    </div>
+            </form>
+            </div>
+        </script>
+        <script type="text/ng-template" id="templates/states/import.html">
+            <h2>Импорт книг</h2>
+            <div>
+            <p>Форма используется для того, чтобы скопировать книги из вашей учетной записи, привязанной к соц. сети, к которой вы утратили доступ.</p>
+            <p>Копирование возможно, только если у вашей текущей учетной записи нет ни одной книги (в том числе в списке к прочтению).</p>
+            <div class="alert alert-warning" ng-if="user.booksCount">У вас уже есть книги. Если вы все же хотите скопировать книги с другого пользователя, то удалите свои.</div>
+            <div class="alert alert-success" ng-if="importSuccess">Скопировано! Обновите страницу, когда будете готовы.</div>
+            <div class="alert alert-danger" ng-if="importFail">Не скопировано. {{errorMessage}}</div>
+            <form ng-show="user">
+                    <div class="form-group">
+                        <label for="importUrl">Вставьте ссылку на публичный список книг пользователя для копирования их себе</label>
+                        <input type="text" class="form-control" id="importUrl" required placeholder="Например, http://www.knigopis.com/#/lucius/books?u=83820536-yandex" ng-model="userUrl">
+                    </div>
+                    <div class="form-group" ng-show="!importSuccess && !loading">
+                        <button type="submit" class="btn btn-primary" ng-click="copyBooks()">Скопировать себе</button>
                     </div>
             </form>
             </div>

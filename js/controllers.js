@@ -232,12 +232,15 @@ appControllers.controller('BookFormController', [
     '$scope', 'apiBook',
     function($scope, apiBook) {
         $scope.bookSaved = 0;
+        
+        var bookSaving = false;
 
         $scope.saveBookAndReturn = function() {
-            if (!$scope.form.$valid) {
+            if (!$scope.form.$valid || bookSaving) {
                 return;
             }
             $scope.showLoading();
+            bookSaving = true;
 
             apiBook.saveBook($scope.book).then(function (response) {
                 afterSave();
@@ -248,14 +251,16 @@ appControllers.controller('BookFormController', [
                 $scope.goToCurrentUserBooks();
             }, $scope.showApiError).then(function () {
                 $scope.hideLoading();
+                bookSaving = false;
             });
         };
         
         $scope.saveBookAndContinue = function() {
-            if (!$scope.form.$valid) {
+            if (!$scope.form.$valid || bookSaving) {
                 return;
             }
             $scope.showLoading();
+            bookSaving = true;
             
             var bookMethod = apiBook.createBook;
             if ($scope.book.id) {
@@ -273,6 +278,7 @@ appControllers.controller('BookFormController', [
                 ga('send', 'event', 'Book', 'Save', response.title);
             }, $scope.showApiError).then(function () {
                 $scope.hideLoading();
+                bookSaving = false;
             });
         };
 
@@ -551,12 +557,14 @@ appControllers.controller('WishFormController', [
     '$scope', '$state', 'apiBook',
     function($scope, $state, apiBook) {
         $scope.bookSaved = 0;
+        var bookSaving = false;
 
         $scope.saveBookAndReturn = function() {
-            if (!$scope.form.$valid) {
+            if (!$scope.form.$valid || bookSaving) {
                 return;
             }
             $scope.showLoading();
+            bookSaving = true;
 
             apiBook.saveWish($scope.book).then(function (response) {
                 $scope.bookSaved = 1;
@@ -565,14 +573,16 @@ appControllers.controller('WishFormController', [
                 $state.go("wish.list");
             }, $scope.showApiError).then(function () {
                 $scope.hideLoading();
+                bookSaving = false;
             });
         };
 
         $scope.saveBookAndContinue = function() {
-            if (!$scope.form.$valid) {
+            if (!$scope.form.$valid || bookSaving) {
                 return;
             }
             $scope.showLoading();
+            bookSaving = true;
 
             apiBook.saveWish($scope.book).then(function (response) {
                 $scope.bookSaved = 1;
@@ -582,6 +592,7 @@ appControllers.controller('WishFormController', [
                 ga('send', 'event', 'Wish', 'Save', $scope.user.id);
             }, $scope.showApiError).then(function () {
                 $scope.hideLoading();
+                bookSaving = false;
             });
         };
 
@@ -699,4 +710,40 @@ appControllers.controller('SettingsController', ['$scope', '$state', 'apiBook', 
         };
         
         ga('send', 'event', 'User', 'SettingsForm', $scope.user.id);
+}]);
+
+appControllers.controller('ImportController', ['$scope', '$state', 'apiBook',
+    function ($scope, $state, apiBook) {
+        $scope.userUrl = '';
+        
+        $scope.copyBooks = function () {
+            
+            var re = /u=([a-zA-Z0-9-_]+)/;
+            var found = $scope.userUrl.match(re);
+            if (!found) {
+                var error = {message: "Wrong url"};
+                $scope.showApiError(error);
+                $scope.importFail = true;
+                return;
+            }
+            var id = found[1];
+
+            $scope.showLoading();
+            apiBook.copyBooksFromUser(id).then(function (response) {
+                if (response.result === 'error') {
+                    $scope.showApiError(response);
+                    $scope.importSuccess = false;
+                    $scope.importFail = true;
+                } else {
+                    $scope.importSuccess = true;
+                    $scope.importFail = false;
+                }
+                ga('send', 'event', 'User', 'Imported', $scope.user.id);
+                
+            }, $scope.showApiError).then(function () {
+                $scope.hideLoading();
+            });
+        };
+        
+        ga('send', 'event', 'User', 'ImportForm', $scope.user.id);
 }]);

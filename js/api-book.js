@@ -141,5 +141,8 @@ app.service('apiBook', function ($http) {
         return call('GET', '/users/find-id-by-parse-id/' + id);
     };
 
+    api.copyBooksFromUser = function (id) {
+        return call('POST', '/users/copy-books-from-user/' + id);
+    };
 });
 

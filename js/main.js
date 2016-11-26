@@ -69,6 +69,13 @@ listApp.config(function ($stateProvider, $httpProvider) {
                 controller: 'SettingsController',
                 data: { pageTitle: 'Настройки' }
             })
+            
+            .state('import', {
+                url: '/import',
+                templateUrl: 'templates/states/import.html',
+                controller: 'ImportController',
+                data: { pageTitle: 'Импорт книг' }
+            })
 
             .state('book', {
                 url: '/book',
