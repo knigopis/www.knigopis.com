@@ -71,6 +71,7 @@
                                     <li class="visible-sm visible-md" ng-show="user" ng-class="{active: state.current.name === 'wish.add'}"><a ui-sref="wish.add">Добавить к прочтению</a></li>
                                     <li class="divider visible-md"></li>
                                     <li ng-show="user && !user.booksCount"><a ui-sref="import" href="#">Импорт</a></li>
+                                    <li ng-show="user && user.booksCount"><a href="http://api.knigopis.com/users/export-books">Экспорт</a></li>
                                     <li><a ui-sref="settings" href="#">Настройки</a></li>
                                     <li class="divider"></li>
                                     <li><a href="#" class="logout-btn" ng-click="logout()">Выйти</a></li>
