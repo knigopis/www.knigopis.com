@@ -4,7 +4,7 @@ app.service('apiBook', function ($http) {
 
     var api = this;
     
-    var apiBaseUrl = '//api-disabled.knigopis.com';
+    var apiBaseUrl = '//api.knigopis.com';
 
     function call (method, url, data) {
         var args = {
