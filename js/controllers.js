@@ -12,28 +12,38 @@ appControllers.controller('MainController', [
     $scope.loginLoading = 0;
     $scope.state = $state;
     $scope.loading = 0;
+    $scope.showLoginForm = true;
+    $scope.showRegForm = false;
+
+    var setUserLoginSession = function (user) {
+        if (!user.photo) {
+            user.photo = 'https://picsum.photos/seed/' + user.nickname + '/64/64';
+        }
+
+        $scope.user = user;
+        localStorageService.set('user', user);
+        $scope.updateLanguage();
+        if (!user.booksCount && user.createdAt === user.updatedAt) {
+            ga('send', 'event', 'User', 'Reg', user.id + ": " + user.nickname);
+        } else {
+            ga('send', 'event', 'User', 'Auth', user.id + ": " + user.nickname);
+        }
+    }
 
     $scope.authCallback = function (token) {
         $scope.loginLoading++;
-        
+
         var browserLang = navigator.language || navigator.userLanguage;
 
         apiBook.getCredentials(token, browserLang).then(function (result) {
-            $scope.user = result.user;
-            localStorageService.set('user', result.user);
-            $scope.updateLanguage();
-            if (!result.user.booksCount && result.user.createdAt === result.user.updatedAt) {
-                ga('send', 'event', 'User', 'Reg', result.user.id + ": " + result.user.nickname);
-            } else {
-                ga('send', 'event', 'User', 'Auth', result.user.id + ": " + result.user.nickname);
-            }
+            setUserLoginSession(result.user);
         }, function (error) {
             $scope.showApiError(error);
         }).then(function(){
             $scope.loginLoading = 0;
         });
     };
-    
+
     $scope.reloadUserData = function () {
         apiBook.getCurrentUserInfo().then(function(user){
             $scope.user = user;
@@ -56,6 +66,32 @@ appControllers.controller('MainController', [
         $scope.loginLoading--;
     };
     window.hideLoginLoading = $scope.hideLoginLoading;
+
+    $scope.login = function () {
+        var browserLang = navigator.language || navigator.userLanguage;
+        $scope.loginForm.errors = null;
+
+        apiBook.loginUser($scope.loginForm.username, $scope.loginForm.password, browserLang).then(function (result) {
+            setUserLoginSession(result.user);
+        }, function(error) {
+            $scope.loginForm.errors = error.data.message;
+        });
+    };
+
+    $scope.register = function () {
+        var browserLang = navigator.language || navigator.userLanguage;
+        $scope.regForm.errors = null;
+
+        apiBook.registerUser($scope.regForm.username, $scope.regForm.password, browserLang).then(function (result) {
+            if (result.user) {
+                setUserLoginSession(result.user);
+            } else {
+                $scope.regForm.errors = JSON.stringify(result);
+            }
+        }, function(error) {
+            $scope.regForm.errors = error.data.message;
+        });
+    };
 
     $scope.logout = function () {
         $scope.user = null;
@@ -103,7 +139,7 @@ appControllers.controller('MainController', [
         $timeout(function(){
             $scope.errorMessage = null;
         }, 4000);
-        
+
         ga('send', 'event', 'Error', 'Show', error.message);
     };
 
@@ -138,7 +174,7 @@ appControllers.controller('MainController', [
     function loadSubscriptions(){
             if ($scope.user) {
                 $scope.showLoading();
-                
+
                 function sortByUpdate(subscriptions) {
                     function compareByUpdate(a, b) {
                         var dateA = new Date(a.subUser.updatedAt);
@@ -151,10 +187,9 @@ appControllers.controller('MainController', [
                         }
                         return 0;
                     }
-                    ;
+
                     return subscriptions.sort(compareByUpdate);
                 }
-                ;
 
                 apiBook.getSubscriptions().then(function (subscriptions) {
                     $scope.subscriptions = sortByUpdate(subscriptions);
@@ -232,7 +267,7 @@ appControllers.controller('BookFormController', [
     '$scope', 'apiBook',
     function($scope, apiBook) {
         $scope.bookSaved = 0;
-        
+
         var bookSaving = false;
 
         $scope.saveBookAndReturn = function() {
@@ -254,14 +289,14 @@ appControllers.controller('BookFormController', [
                 bookSaving = false;
             });
         };
-        
+
         $scope.saveBookAndContinue = function() {
             if (!$scope.form.$valid || bookSaving) {
                 return;
             }
             $scope.showLoading();
             bookSaving = true;
-            
+
             var bookMethod = apiBook.createBook;
             if ($scope.book.id) {
                 bookMethod = apiBook.editBook;
@@ -298,7 +333,7 @@ appControllers.controller('BookFormController', [
                 $scope.book.wish.delete();
             }
         }
-        
+
         ga('send', 'event', 'Book', 'EditForm');
 }]);
 
@@ -332,7 +367,7 @@ appControllers.controller('BookAddController', [
                 $scope.hideLoading();
             });
         }
-        
+
         ga('send', 'event', 'Book', 'AddForm');
 }]);
 
@@ -433,7 +468,7 @@ appControllers.controller('UserBooksController', ['$rootScope', '$scope', '$stat
             }
 
             books.sort(compare);
-        };
+        }
 
         function divideByYears(books) {
             var divided = {};
@@ -486,7 +521,7 @@ appControllers.controller('UserBooksController', ['$rootScope', '$scope', '$stat
             }
             return sorted;
         }
-        
+
         $scope.getReadDateForList = function(book) {
             var date = '';
             if (book.readYear && book.readMonth) {
@@ -605,7 +640,7 @@ appControllers.controller('WishFormController', [
                 $scope.hideLoading();
             });
         };
-        
+
         ga('send', 'event', 'Wish', 'EditForm');
 }]);
 
@@ -615,7 +650,7 @@ appControllers.controller('WishListController', [
         $scope.wishList = [];
         $scope.loaded = false;
         $scope.showLoading();
-        
+
         function sortByPriority(wishes) {
             function compareByUpdate(a, b) {
                 var pa = a.priority;
@@ -628,9 +663,9 @@ appControllers.controller('WishListController', [
                 }
                 return 0;
             }
-            ;
+
             return wishes.sort(compareByUpdate);
-        };
+        }
 
         apiBook.getWishes().then(function (wishes) {
             $scope.wishList = sortByPriority(wishes);
@@ -660,17 +695,17 @@ appControllers.controller('WishAddController', [
                 $scope.hideLoading();
             });
         }
-        
+
         ga('send', 'event', 'Book', 'AddForm');
 }]);
 
 appControllers.controller('WishEditController', [
-    '$scope', '$stateParams', 'apiBook', 
+    '$scope', '$stateParams', 'apiBook',
     function($scope, $stateParams, apiBook) {
         if ($stateParams.id) {
             $scope.showLoading();
             $scope.book = {};
-            
+
             apiBook.getWish($stateParams.id).then(function(wish){
                 $scope.book = wish;
             }, $scope.showApiError).then(function() {
@@ -708,16 +743,16 @@ appControllers.controller('SettingsController', ['$scope', '$state', 'apiBook', 
                 $scope.hideLoading();
             });
         };
-        
+
         ga('send', 'event', 'User', 'SettingsForm', $scope.user.id);
 }]);
 
 appControllers.controller('ImportController', ['$scope', '$state', 'apiBook',
     function ($scope, $state, apiBook) {
         $scope.userUrl = '';
-        
+
         $scope.copyBooks = function () {
-            
+
             var re = /u=([a-zA-Z0-9-_]+)/;
             var found = $scope.userUrl.match(re);
             if (!found) {
@@ -739,11 +774,11 @@ appControllers.controller('ImportController', ['$scope', '$state', 'apiBook',
                     $scope.importFail = false;
                 }
                 ga('send', 'event', 'User', 'Imported', $scope.user.id);
-                
+
             }, $scope.showApiError).then(function () {
                 $scope.hideLoading();
             });
         };
-        
+
         ga('send', 'event', 'User', 'ImportForm', $scope.user.id);
 }]);

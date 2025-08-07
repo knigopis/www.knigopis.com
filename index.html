@@ -19,7 +19,7 @@
             }
         </style>
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/main.css?v=2">
 
         <!--[if lt IE 9]>
             <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -52,10 +52,72 @@
 
                     <div class="navbar-right">
 
-                        <div class="signin-container" ng-cloak ng-show="!user && !loginLoading">
-                            <div class="login-btn">Войти через</div>
-                            <div data-uloginid="eaffd33e"></div>
-                        </div>
+                        <ul class="nav navbar-nav userinfo-container" ng-cloak ng-show="!user">
+                            <li>
+                                <div class="signin-container" ng-cloak ng-show="!user && !loginLoading">
+                                    <div class="login-btn">Войти через</div>
+                                    <div data-uloginid="eaffd33e"></div>
+                                </div>
+                            </li>
+                            <li class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle user-info-panel" data-toggle="dropdown" role="button" aria-expanded="false">
+                                    Войти с паролем
+                                    <span class="caret user-caret"></span>
+                                </a>
+                                <ul class="dropdown-menu login-dp" role="menu">
+                                    <li>
+                                        <div class="row">
+                                            <form class="form" role="form" method="post" ng-show="showLoginForm">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="sr-only" for="inputUsername">Имя пользователя</label>
+                                                        <input type="text" class="form-control" id="inputUsername" placeholder="Имя пользователя" ng-model="loginForm.username" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="sr-only" for="inputPassword">Пароль</label>
+                                                        <input type="password" class="form-control" id="inputPassword" placeholder="Пароль" ng-model="loginForm.password" required>
+                                                        <div class="help-block text-right"><a href="javascript:void(0);" ng-click="showForgetPw=true">Забыли пароль?</a></div>
+                                                        <p ng-show="showForgetPw">
+                                                            Если вы забыли пароль, то создайте новую учетную запись и импортируйте книги из старой учетной записи.
+                                                            У нас нет возможности восстановить пароль, так как он хранится в зашифрованном виде.
+                                                            Для поиска старой учетной записи используйте <a href="https://github.com/knigopis/repo2.knigopis.com" target="_blank">git репозиторий</a>.
+                                                        </p>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-primary btn-block" ng-click="login()">Войти</button>
+                                                    </div>
+                                                    <div class="text text-danger" ng-show="loginForm.errors">{{loginForm.errors}}</div>
+                                                </div>
+                                                <div class="bottom text-center">
+                                                    <a href="javascript:void(0);" ng-click="showRegForm=true;showLoginForm=false"><b>Зарегистрироваться</b></a>
+                                                </div>
+                                            </form>
+
+                                            <form class="form" role="form" method="post" ng-show="showRegForm">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="sr-only" for="inputUsername2">Имя пользователя</label>
+                                                        <input type="text" class="form-control" id="inputUsername2" placeholder="Имя пользователя" ng-model="regForm.username" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="sr-only" for="inputPassword2">Пароль</label>
+                                                        <input type="password" class="form-control" id="inputPassword2" placeholder="Пароль" ng-model="regForm.password" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-primary btn-block" ng-click="register()">Зарегистрироваться</button>
+                                                    </div>
+                                                    <div class="text text-danger" ng-show="regForm.errors">{{regForm.errors}}</div>
+                                                </div>
+                                                <div class="bottom text-center">
+                                                    <a href="javascript:void(0);" ng-click="showRegForm=false;showLoginForm=true"><b>Войти</b></a>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
 
                         <ul class="nav navbar-nav userinfo-container" ng-cloak ng-show="user && !loginLoading">
                             <li class="dropdown">
@@ -112,7 +174,7 @@
                                 </div>
                             </div>
                             <p class="text-center">
-                                Конечно, такой сервис не единственный. Но изученные нами конкуренты имеет некоторые недостатки и по некоторым не удовлетворяли авторов проекта.<br>Речь не только о фатальном недостатке. Итак, наши преимущества: 
+                                Конечно, такой сервис не единственный. Но изученные нами конкуренты имеет некоторые недостатки и по некоторым не удовлетворяли авторов проекта.<br>Речь не только о фатальном недостатке. Итак, наши преимущества:
                             </p>
                             <div class="row features">
                                 <div class="col-md-3">
@@ -476,8 +538,8 @@
         <script src="/js/vendor/angular.min.js"></script>
         <script src="/js/vendor/angular-ui-router.min.js"></script>
         <script src="/js/vendor/angular-local-storage.min.js"></script>
-        <script src="/js/controllers.js"></script>
-        <script src="/js/main.js"></script>
-        <script src="/js/api-book.js"></script>
+        <script src="/js/controllers.js?v=2"></script>
+        <script src="/js/main.js?v=2"></script>
+        <script src="/js/api-book.js?v=2"></script>
     </body>
 </html>

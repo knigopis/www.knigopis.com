@@ -2,12 +2,14 @@ window.authCallback = function(){};
 window.showLoginLoading = function(){};
 window.hideLoginLoading = function(){};
 
-uLogin.setStateListener("uLogin", "open", function(){
-    window.showLoginLoading();
-});
-uLogin.setStateListener("uLogin", "close", function(){
-    window.hideLoginLoading();
-});
+if (typeof window.uLogin !== 'undefined') {
+    uLogin.setStateListener("uLogin", "open", function(){
+        window.showLoginLoading();
+    });
+    uLogin.setStateListener("uLogin", "close", function(){
+        window.hideLoginLoading();
+    });
+}
 
 var listApp = angular.module('listApp', ['ui.router', 'appControllers']);
 
@@ -69,7 +71,7 @@ listApp.config(function ($stateProvider, $httpProvider) {
                 controller: 'SettingsController',
                 data: { pageTitle: 'Настройки' }
             })
-            
+
             .state('import', {
                 url: '/import',
                 templateUrl: 'templates/states/import.html',

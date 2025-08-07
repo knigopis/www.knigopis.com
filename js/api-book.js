@@ -3,7 +3,7 @@ var app = angular.module('appControllers');
 app.service('apiBook', function ($http) {
 
     var api = this;
-    
+
     var apiBaseUrl = '//api.knigopis.com';
 
     function call (method, url, data) {
@@ -18,12 +18,12 @@ app.service('apiBook', function ($http) {
             return response.data;
         });
     }
-    
+
     /* Books */
     api.getLatestBooks = function () {
         return call('GET', '/books/latest');
     };
-    
+
     api.getLatestBooksWithNotes = function () {
         return call('GET', '/books/latest-notes').then(function(response){
             var arr = [];
@@ -45,7 +45,7 @@ app.service('apiBook', function ($http) {
     api.editBook = function (book) {
         return call('PUT', '/books/' + book.id, book);
     };
-    
+
     api.saveBook = function (book) {
         if (book.id) {
             return api.editBook(book);
@@ -70,11 +70,11 @@ app.service('apiBook', function ($http) {
     api.createWish = function (wish) {
         return call('POST', '/wishes', wish);
     };
-    
+
     api.editWish = function (wish) {
         return call('PUT', '/wishes/' + wish.id, wish);
     };
-    
+
     api.saveWish = function (wish) {
         if (wish.id) {
             return api.editWish(wish);
@@ -104,7 +104,7 @@ app.service('apiBook', function ($http) {
     api.updateSubscriptionBooksCount = function (subUserId) {
         return call('PUT', '/subscriptions/' + subUserId);
     };
-    
+
 
     /* User */
     api.getCredentials = function (token) {
@@ -118,7 +118,7 @@ app.service('apiBook', function ($http) {
     api.getUserInfo = function (id) {
         return call('GET', '/users/' + id);
     };
-    
+
     api.getCurrentUserInfo = function () {
         return call('GET', '/users/current');
     };
@@ -132,11 +132,11 @@ app.service('apiBook', function ($http) {
             return usersArr;
         });
     };
-    
+
     api.editUser = function (id, data) {
         return call('PUT', '/users/' + id, data);
     };
-    
+
     api.findIdByParseId = function (id) {
         return call('GET', '/users/find-id-by-parse-id/' + id);
     };
@@ -144,5 +144,12 @@ app.service('apiBook', function ($http) {
     api.copyBooksFromUser = function (id) {
         return call('POST', '/users/copy-books-from-user/' + id);
     };
-});
 
+    api.registerUser = function (username, password, lang) {
+        return call('POST', '/auth/register', {username, password, lang});
+    };
+
+    api.loginUser = function (username, password, lang) {
+        return call('POST', '/auth/login', {username, password, lang});
+    };
+});
