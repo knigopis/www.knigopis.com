@@ -152,4 +152,8 @@ app.service('apiBook', function ($http) {
     api.loginUser = function (username, password, lang) {
         return call('POST', '/auth/login', {username, password, lang});
     };
+
+    api.logout = function () {
+        return call('POST', '/auth/logout');
+    };
 });

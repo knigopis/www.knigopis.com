@@ -94,6 +94,7 @@ appControllers.controller('MainController', [
     };
 
     $scope.logout = function () {
+        apiBook.logout();
         $scope.user = null;
         localStorageService.set('user', null);
         ga('send', 'event', 'User', 'Logout');
