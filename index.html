@@ -53,12 +53,6 @@
                     <div class="navbar-right">
 
                         <ul class="nav navbar-nav userinfo-container" ng-cloak ng-show="!user">
-                            <li>
-                                <div class="signin-container" ng-cloak ng-show="!user && !loginLoading">
-                                    <div class="login-btn">Войти через</div>
-                                    <div data-uloginid="eaffd33e"></div>
-                                </div>
-                            </li>
                             <li class="dropdown">
                                 <a href="javascript:void(0);" class="dropdown-toggle user-info-panel" data-toggle="dropdown" role="button" aria-expanded="false">
                                     Войти с паролем
@@ -78,7 +72,6 @@
                                                         <input type="password" class="form-control" id="inputPassword" placeholder="Пароль" ng-model="loginForm.password" required>
                                                         <div class="help-block text-right"><a href="javascript:void(0);" ng-click="showForgetPw=true">Забыли пароль?</a></div>
                                                         <p ng-show="showForgetPw">
-                                                            Если вы забыли пароль, то создайте новую учетную запись и импортируйте книги из старой учетной записи.
                                                             У нас нет возможности восстановить пароль, так как он хранится в зашифрованном виде.
                                                             Для поиска старой учетной записи используйте <a href="https://github.com/knigopis/repo2.knigopis.com" target="_blank">git репозиторий</a>.
                                                         </p>
@@ -88,13 +81,13 @@
                                                     </div>
                                                     <div class="text text-danger" ng-show="loginForm.errors">{{loginForm.errors}}</div>
                                                 </div>
-                                                <div class="bottom text-center">
+                                                <div class="bottom text-center" style="display: none;">
                                                     <a href="javascript:void(0);" ng-click="showRegForm=true;showLoginForm=false"><b>Зарегистрироваться</b></a>
                                                 </div>
                                             </form>
 
                                             <form class="form" role="form" method="post" ng-show="showRegForm">
-                                                <div class="col-md-12">
+                                                <div class="col-md-12" style="display: none;">
                                                     <div class="form-group">
                                                         <label class="sr-only" for="inputUsername2">Имя пользователя</label>
                                                         <input type="text" class="form-control" id="inputUsername2" placeholder="Имя пользователя" ng-model="regForm.username" required>
@@ -258,7 +251,9 @@
                         <a target="_blank" href="https://play.google.com/store/apps/details?id=org.sirekanyan.knigopis">Мобильное приложение (Android)</a>,
                         <a target="_blank" href="//alpha.knigopis.com/#/">Альтернативная web-версия</a>
                     </p>
-                    <p>Вход через Twitter перестал работать. Вы можете зайти через другую сеть и скопировать свои записи в неё.</p>
+                    <p>Обновление от мая 2026: вход через сервис uLogin перестал работать. 
+                        Регистрация новых пользователей остановлена. 
+                        Вы по-прежнему можете получить ранее сохраненный список, но новых пользователей мы больше не принимаем в связи с особенностями хранения данных.</p>
                     <p>
                         &copy; <span>Книгопись</span> 2015-2019 &mdash; <span>дневник читателя, сервис учёта прочитанных книг</span>.
                         <span ng-if="feedbackEmail" ng-cloak="">
@@ -519,22 +514,12 @@
             </form>
             </div>
         </script>
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-            ga('create', 'UA-82625517-1', 'auto');
-            ga('send', 'pageview');
-        </script>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="/js/vendor/jquery-1.11.1.min.js"><\/script>')</script>
 
         <script src="/js/vendor/bootstrap.min.js"></script>
 
-        <script src="//ulogin.ru/js/ulogin.js"></script>
         <script src="/js/vendor/angular.min.js"></script>
         <script src="/js/vendor/angular-ui-router.min.js"></script>
         <script src="/js/vendor/angular-local-storage.min.js"></script>
